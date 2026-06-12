@@ -1,0 +1,202 @@
+{
+  "brand": {
+    "name": "FINNNESS",
+    "theme": "Light",
+    "archetype": "1 (Organic & Earthy / Vibrant Play)",
+    "description": "A vibrant, optimistic wellness and fitness tracker that combines generous spacing with highly legible, color-coded components."
+  },
+  "colors": {
+    "primary": "#42C8F5",
+    "background": "#EEF3F8",
+    "text": {
+      "primary": "#1F2937",
+      "secondary": "#4B5563",
+      "tertiary": "#9CA3AF"
+    },
+    "cards": {
+      "background": "#FFFFFF"
+    },
+    "bottom_nav": {
+      "active": "#42C8F5",
+      "inactive": "#9CA3AF",
+      "background": "#FFFFFF"
+    },
+    "stats": {
+      "calories": "#F07070",
+      "nutrition": "#5CBF7A",
+      "sleep": "#7B7FD4"
+    },
+    "workouts": {
+      "yoga": "#A17FD4",
+      "hiit": "#F07070",
+      "run": "#42C8F5",
+      "strength": "#F5A742",
+      "pilates": "#5CBF7A"
+    },
+    "meals": {
+      "breakfast": "#F5C842",
+      "lunch": "#5CBF7A",
+      "snack": "#F5A742",
+      "dinner": "#42C8F5"
+    },
+    "cta": {
+      "start_workout": "#F5C842",
+      "log_meal": "#5CBF7A",
+      "register_accent": "#2BBFA4"
+    },
+    "sleep_hero": {
+      "background": "#7B7FD4",
+      "weekly_avg_gradient": ["#9B7FD4", "#7B7FD4"]
+    },
+    "profile": {
+      "avatar": "#E05C8A",
+      "logout": "#E05C5C"
+    }
+  },
+  "typography": {
+    "fontFamily": "Inter",
+    "weights": {
+      "regular": "400",
+      "medium": "500",
+      "semiBold": "600",
+      "bold": "700",
+      "black": "900"
+    },
+    "sizes": {
+      "xs": 12,
+      "sm": 14,
+      "base": 16,
+      "lg": 18,
+      "xl": 20,
+      "2xl": 24,
+      "3xl": 30,
+      "4xl": 36,
+      "hero": 48
+    },
+    "rules": {
+      "headers": "Use tracking-tight (letterSpacing: -0.5) for headers to counteract Inter's generic feel.",
+      "overlines": "Use uppercase, wide tracking (letterSpacing: 1.5) for small labels.",
+      "brand": "The FINNNESS logo text must be Inter Black (900) with tight tracking."
+    }
+  },
+  "spacing": {
+    "horizontal": 16,
+    "vertical": 12,
+    "gap_sm": 8,
+    "gap_md": 16,
+    "gap_lg": 24,
+    "gap_xl": 32,
+    "container_padding": 24
+  },
+  "components": {
+    "card": {
+      "backgroundColor": "#FFFFFF",
+      "borderRadius": 16,
+      "padding": 16,
+      "shadow": {
+        "shadowColor": "#1F2937",
+        "shadowOffset": { "width": 0, "height": 8 },
+        "shadowOpacity": 0.04,
+        "shadowRadius": 16,
+        "elevation": 3
+      }
+    },
+    "button": {
+      "borderRadius": 24,
+      "paddingVertical": 14,
+      "paddingHorizontal": 24,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "shadow": {
+        "shadowColor": "#000000",
+        "shadowOffset": { "width": 0, "height": 4 },
+        "shadowOpacity": 0.1,
+        "shadowRadius": 8,
+        "elevation": 2
+      }
+    },
+    "chip": {
+      "borderRadius": 12,
+      "paddingVertical": 6,
+      "paddingHorizontal": 12,
+      "flexDirection": "row",
+      "alignItems": "center",
+      "gap": 4
+    },
+    "avatar": {
+      "borderRadius": 9999,
+      "backgroundColor": "#E05C8A",
+      "overflow": "hidden"
+    },
+    "progressBar": {
+      "height": 8,
+      "borderRadius": 4,
+      "backgroundColor": "#EEF3F8"
+    }
+  },
+  "icons": {
+    "library": "lucide-react-native",
+    "strokeWidth": 2.5,
+    "rules": "Use vector icons from lucide-react-native. No emoji icons for primary UI."
+  },
+  "screens": {
+    "Splash": {
+      "background": "LinearGradient from #EEF3F8 to #FFFFFF",
+      "content": "Heartbeat icon centered, 'FINNNESS' in Black weight text below it, decorative wave shape SVG at bottom."
+    },
+    "Auth (Login/Register/Forgot)": {
+      "layout": "Centered form over #EEF3F8 background.",
+      "header": "Iconic CircleAvatar at top.",
+      "form": "White Card, borderRadius 16. Use #2BBFA4 as accent for Register screen."
+    },
+    "Home Dashboard": {
+      "layout": "Vertical scroll. Top section: Welcome text.",
+      "stats_row": "Horizontal scroll of 3 square cards (Calories #F07070, Nutrition #5CBF7A, Sleep #7B7FD4).",
+      "daily_progress": "Full-width Card with 3 progress bars.",
+      "ctas": "Row of 2 CTA buttons: 'Start Workout' (#F5C842) and 'Log Meal' (#5CBF7A)."
+    },
+    "Workout": {
+      "list": "Vertical list of Workout Cards. Each color-coded by type (Yoga #A17FD4, HIIT #F07070, Run #42C8F5, Strength #F5A742, Pilates #5CBF7A).",
+      "detail": "Colored hero banner matching workout type, stat chips overlay, list of exercises below."
+    },
+    "Meals": {
+      "list": "Daily intake progress card at top, followed by 4 meal cards (Breakfast #F5C842, Lunch #5CBF7A, Snack #F5A742, Dinner #42C8F5).",
+      "detail": "Full screen form/info view."
+    },
+    "Sleep Tracker": {
+      "hero": "Indigo #7B7FD4 hero card displaying sleep duration.",
+      "details": "Row showing Bedtime/Wakeup. Sleep quality progress bars.",
+      "weekly": "Card with purple gradient (#9B7FD4 -> #7B7FD4) showing weekly average."
+    },
+    "Profile": {
+      "header": "Pink #E05C8A avatar.",
+      "menu": "4 info ListTiles in a white Card, Preferences Card, Logout button in Red #E05C5C."
+    }
+  },
+  "testing": {
+    "requirements": "All interactive and key informational elements MUST include both a testID attribute AND a data-testid attribute (for dual web/native compatability during automated testing)."
+  },
+  "media": {
+    "image_urls": [
+      {
+        "url": "https://images.pexels.com/photos/12174224/pexels-photo-12174224.jpeg",
+        "description": "Healthy breakfast bowl, use for Meal Detail or Breakfast card background if needed.",
+        "category": "meals"
+      },
+      {
+        "url": "https://images.pexels.com/photos/6582988/pexels-photo-6582988.jpeg",
+        "description": "Woman practicing yoga, use for Yoga Workout Detail hero banner.",
+        "category": "workouts"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color hex codes provided in this JSON.",
+    "Use react-native-safe-area-context for all screen wrappers.",
+    "Use lucide-react-native for all icons.",
+    "Use expo-linear-gradient for the Splash screen and Sleep weekly avg card.",
+    "Apply both testID=\"...\" AND data-testid=\"...\" to ALL Touchables, Buttons, and key text fields to ensure robust web and native testing.",
+    "Use generic spacing constants mapping to 16px horizontal and 12px vertical for general layout.",
+    "Generate code in .js files (not .tsx) as requested."
+  ]
+}
