@@ -1,7 +1,14 @@
-import { ref, set, get, update, remove, child } from "firebase/database";
+import { ref, set, get, update, remove, push } from "firebase/database";
 import { db } from "@/src/lib/firebase";
 import { storage } from "@/src/utils/storage";
-import type { Workout, Meal, Sleep, UserProfile } from "@/src/types/models";
+import type {
+  Workout,
+  Meal,
+  Sleep,
+  UserProfile,
+  WorkoutLogEntry,
+  Recipe,
+} from "@/src/types/models";
 
 // Local cache keys
 const cacheKey = (uid: string, kind: string) => `finnness:${uid}:${kind}`;
@@ -109,7 +116,6 @@ export async function saveWorkout(uid: string, workout: Workout) {
     value: workout,
     op: "set",
   });
-  // update cache
   const list = await fetchWorkouts(uid);
   const map: Record<string, Workout> = {};
   let replaced = false;
@@ -123,6 +129,24 @@ export async function saveWorkout(uid: string, workout: Workout) {
   }
   if (!replaced) map[workout.id] = workout;
   await storage.setItem(cacheKey(uid, "workouts"), JSON.stringify(map) as any);
+}
+
+// ===== Workout Log (completed sessions) =====
+export async function logWorkoutCompletion(uid: string, entry: WorkoutLogEntry) {
+  const date = new Date(entry.completedAt).toISOString().split("T")[0];
+  const path = `finnness/users/${uid}/workout_log/${date}`;
+  const key = `${entry.workoutId}-${entry.completedAt}`;
+  await writeNow({ path: `${path}/${key}`, value: entry, op: "set" });
+}
+
+export async function fetchWorkoutLogForDate(uid: string, date: string): Promise<WorkoutLogEntry[]> {
+  const data = await cachedFetch<Record<string, WorkoutLogEntry>>(
+    uid,
+    `log:${date}`,
+    `finnness/users/${uid}/workout_log/${date}`,
+  );
+  if (!data) return [];
+  return Object.values(data).sort((a, b) => b.completedAt - a.completedAt);
 }
 
 // ===== Meals =====
@@ -142,7 +166,6 @@ export async function saveMeal(uid: string, meal: Meal) {
     value: meal,
     op: "set",
   });
-  // update cache for that date
   const list = await fetchMealsForDate(uid, meal.date);
   const map: Record<string, Meal> = {};
   let replaced = false;
@@ -156,6 +179,26 @@ export async function saveMeal(uid: string, meal: Meal) {
   }
   if (!replaced) map[meal.type] = meal;
   await storage.setItem(cacheKey(uid, `meals:${meal.date}`), JSON.stringify(map) as any);
+}
+
+export async function toggleMealEaten(uid: string, meal: Meal, eaten: boolean) {
+  const updated: Meal = { ...meal, eaten };
+  await saveMeal(uid, updated);
+}
+
+// ===== Recipes (user-created) =====
+export async function fetchRecipes(uid: string): Promise<Recipe[]> {
+  const data = await cachedFetch<Record<string, Recipe>>(uid, "recipes", `finnness/users/${uid}/recipes`);
+  if (!data) return [];
+  return Object.values(data).sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export async function saveRecipe(uid: string, recipe: Recipe) {
+  await writeNow({
+    path: `finnness/users/${uid}/recipes/${recipe.id}`,
+    value: recipe,
+    op: "set",
+  });
 }
 
 // ===== Sleep =====

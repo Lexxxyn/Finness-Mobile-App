@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Heart, Mail, Lock } from "lucide-react-native";
+import { Heart, Mail, Lock, Eye, EyeOff } from "lucide-react-native";
 import { Link, useRouter } from "expo-router";
 
 import { COLORS, SHADOW_CARD } from "@/src/constants/theme";
@@ -22,6 +22,7 @@ export default function Login() {
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -73,10 +74,25 @@ export default function Login() {
               label="Password"
               icon={<Lock color={COLORS.text.tertiary} size={18} />}
               placeholder="Enter your password"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
               testID="login-password-input"
+              rightElement={
+                <TouchableOpacity
+                  onPress={() => setShowPassword((v) => !v)}
+                  style={styles.eyeBtn}
+                  testID="login-toggle-password"
+                  // @ts-ignore
+                  data-testid="login-toggle-password"
+                >
+                  {showPassword ? (
+                    <EyeOff color={COLORS.text.tertiary} size={18} />
+                  ) : (
+                    <Eye color={COLORS.text.tertiary} size={18} />
+                  )}
+                </TouchableOpacity>
+              }
             />
             <TouchableOpacity
               onPress={() => router.push("/(auth)/forgot-password")}
@@ -146,19 +162,11 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 24,
   },
-  card: {
-    backgroundColor: COLORS.card,
-    borderRadius: 20,
-    padding: 20,
-  },
+  card: { backgroundColor: COLORS.card, borderRadius: 20, padding: 20 },
   forgot: { alignSelf: "flex-end", paddingVertical: 6, marginBottom: 8 },
   forgotText: { color: COLORS.primary, fontWeight: "700", fontSize: 13 },
-  error: {
-    color: "#DC2626",
-    fontSize: 13,
-    marginBottom: 10,
-    textAlign: "center",
-  },
+  eyeBtn: { paddingHorizontal: 14, paddingVertical: 12 },
+  error: { color: "#DC2626", fontSize: 13, marginBottom: 10, textAlign: "center" },
   footerRow: {
     flexDirection: "row",
     justifyContent: "center",

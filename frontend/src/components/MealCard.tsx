@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
-import { Plus } from "lucide-react-native";
+import { Check } from "lucide-react-native";
 import { COLORS, SHADOW_CARD } from "@/src/constants/theme";
 import type { Meal } from "@/src/types/models";
 
@@ -14,12 +14,14 @@ const MEAL_LABEL: Record<Meal["type"], string> = {
 type Props = {
   meal: Meal;
   onPress: () => void;
-  onAdd?: () => void;
+  onToggleEaten?: (next: boolean) => void;
   testID?: string;
 };
 
-export function MealCard({ meal, onPress, onAdd, testID }: Props) {
+export function MealCard({ meal, onPress, onToggleEaten, testID }: Props) {
   const color = COLORS.meals[meal.type];
+  const eaten = !!meal.eaten;
+
   return (
     <TouchableOpacity
       activeOpacity={0.85}
@@ -27,7 +29,12 @@ export function MealCard({ meal, onPress, onAdd, testID }: Props) {
       testID={testID}
       // @ts-ignore
       data-testid={testID}
-      style={[styles.card, { backgroundColor: color }, SHADOW_CARD]}
+      style={[
+        styles.card,
+        { backgroundColor: color },
+        SHADOW_CARD,
+        eaten && { opacity: 0.78 },
+      ]}
     >
       <View style={styles.iconBox}>
         <Text style={styles.emoji}>
@@ -42,7 +49,7 @@ export function MealCard({ meal, onPress, onAdd, testID }: Props) {
       </View>
       <View style={styles.body}>
         <Text style={styles.kind}>{MEAL_LABEL[meal.type]}</Text>
-        <Text style={styles.food} numberOfLines={1}>
+        <Text style={[styles.food, eaten && styles.foodDone]} numberOfLines={1}>
           {meal.foodName}
         </Text>
         <Text style={styles.meta}>
@@ -50,13 +57,20 @@ export function MealCard({ meal, onPress, onAdd, testID }: Props) {
         </Text>
       </View>
       <TouchableOpacity
-        onPress={onAdd ?? onPress}
-        style={styles.addBtn}
-        testID={`${testID}-add`}
+        onPress={(e) => {
+          e?.stopPropagation?.();
+          onToggleEaten?.(!eaten);
+        }}
+        style={[
+          styles.checkbox,
+          eaten && { backgroundColor: "#FFFFFF" },
+        ]}
+        testID={`${testID}-check`}
         // @ts-ignore
-        data-testid={`${testID}-add`}
+        data-testid={`${testID}-check`}
+        hitSlop={10}
       >
-        <Plus color={color} size={20} strokeWidth={3} />
+        {eaten ? <Check color={color} size={20} strokeWidth={3} /> : null}
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -94,12 +108,15 @@ const styles = StyleSheet.create({
     marginTop: 2,
     letterSpacing: -0.3,
   },
+  foodDone: { textDecorationLine: "line-through", color: "#FFFFFFDD" },
   meta: { color: "#FFFFFFDD", fontSize: 12, marginTop: 2 },
-  addBtn: {
+  checkbox: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#FFFFFF",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
   },

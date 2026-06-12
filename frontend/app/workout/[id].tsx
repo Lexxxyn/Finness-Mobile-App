@@ -114,9 +114,9 @@ export default function WorkoutDetail() {
       <View style={styles.bottomBar}>
         <PrimaryButton
           label="Start Workout"
-          color={COLORS.primary}
+          color={w.color}
           testID="workout-detail-start"
-          onPress={() => {}}
+          onPress={() => router.push(`/workout/play/${w.id}`)}
         />
       </View>
     </SafeAreaView>
