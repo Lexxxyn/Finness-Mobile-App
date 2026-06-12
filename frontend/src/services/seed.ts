@@ -3,6 +3,9 @@ import { db } from "@/src/lib/firebase";
 import type { Workout, Meal, Sleep } from "@/src/types/models";
 import { COLORS } from "@/src/constants/theme";
 
+// Bump this whenever the canonical workout list changes so existing users get the update.
+const SEED_VERSION = 2;
+
 function todayStr(): string {
   return new Date().toISOString().split("T")[0];
 }
@@ -26,10 +29,10 @@ export const SEED_WORKOUTS: Workout[] = [
     equipment: ["yoga_mat", "bodyweight"],
     tags: ["flexibility", "mindfulness", "morning"],
     exercises: [
-      { id: "e1", name: "Sun Salutation",        sets: 3, reps: 5,  restSeconds: 30, cue: "Flow smoothly through each pose, syncing movement with breath." },
-      { id: "e2", name: "Downward Dog Flow",     sets: 3, reps: 8,  restSeconds: 30, cue: "Press hips up and back, lengthening through the spine." },
-      { id: "e3", name: "Warrior II",            sets: 2, reps: 10, restSeconds: 30, cue: "Front knee tracks over ankle. Gaze past front fingertips." },
-      { id: "e4", name: "Child's Pose",          sets: 1, reps: 5,  restSeconds: 0,  cue: "Sit hips back to heels and rest forehead on the mat for 5 breaths." },
+      { id: "e1", name: "Sun Salutation",        sets: 3, reps: 5,  restSeconds: 30, cue: "Stand tall at the front of your mat, feet hip-width. Inhale as you sweep your arms overhead. Exhale and fold forward, then step back into a low lunge and downward dog. Flow back to standing with a controlled rise." },
+      { id: "e2", name: "Downward Dog Flow",     sets: 3, reps: 8,  restSeconds: 30, cue: "Start on hands and knees with palms shoulder-width. Tuck toes and press hips up and back into an inverted V. Lengthen through your spine and pedal each heel toward the floor. Hold for 1 breath per rep." },
+      { id: "e3", name: "Warrior II",            sets: 2, reps: 10, restSeconds: 30, cue: "Step your feet wide and turn the front toes forward. Bend the front knee directly over the ankle. Extend arms in a T-shape and gaze past your front fingertips. Hold a strong stance, then switch sides." },
+      { id: "e4", name: "Child's Pose",          sets: 1, reps: 5,  restSeconds: 0,  cue: "Kneel on the mat with big toes touching. Sit your hips back to your heels and walk your hands forward. Rest your forehead on the mat. Breathe slowly for 5 full breaths." },
     ],
   },
   {
@@ -44,10 +47,10 @@ export const SEED_WORKOUTS: Workout[] = [
     equipment: ["bodyweight"],
     tags: ["cardio", "fat-burn", "endurance"],
     exercises: [
-      { id: "e1", name: "Burpees",            sets: 4, reps: 12, restSeconds: 30, cue: "Explode up, chest to floor, jump to standing. Full range every rep." },
-      { id: "e2", name: "Mountain Climbers",  sets: 4, reps: 20, restSeconds: 30, cue: "Drive knees toward chest, keep hips low. Count both legs." },
-      { id: "e3", name: "Jump Squats",        sets: 4, reps: 15, restSeconds: 45, cue: "Sit back, then jump tall. Land soft, knees tracking toes." },
-      { id: "e4", name: "Plank to Push-up",   sets: 3, reps: 10, restSeconds: 45, cue: "Plank → push-up → plank. Keep hips level the entire time." },
+      { id: "e1", name: "Burpees",            sets: 4, reps: 12, restSeconds: 30, cue: "Stand tall, then squat down and place hands on the floor. Jump or step your feet back into a plank. Lower your chest to the floor, then push back up. Hop your feet forward and explode straight up with arms overhead." },
+      { id: "e2", name: "Mountain Climbers",  sets: 4, reps: 20, restSeconds: 30, cue: "Start in a high plank with shoulders over wrists. Drive your right knee toward your chest. Switch quickly so the left knee comes forward as the right leg extends back. Keep hips low and core tight throughout. Count both legs together." },
+      { id: "e3", name: "Jump Squats",        sets: 4, reps: 15, restSeconds: 45, cue: "Stand with feet shoulder-width and toes slightly out. Sit your hips back into a squat. Drive through your heels and jump explosively. Land soft with bent knees and immediately drop into the next rep." },
+      { id: "e4", name: "Plank to Push-up",   sets: 3, reps: 10, restSeconds: 45, cue: "Start in a forearm plank with elbows under shoulders. Push up one hand at a time into a high plank. Lower one elbow at a time back to forearm plank. Keep hips level — no rocking side to side." },
     ],
   },
   {
@@ -62,10 +65,10 @@ export const SEED_WORKOUTS: Workout[] = [
     equipment: ["bodyweight", "treadmill"],
     tags: ["cardio", "endurance", "outdoor"],
     exercises: [
-      { id: "e1", name: "Warm-up Walk", sets: 1, reps: 5,  restSeconds: 0, cue: "Brisk walk to loosen up joints and elevate heart rate." },
-      { id: "e2", name: "Easy Jog",     sets: 1, reps: 10, restSeconds: 0, cue: "Conversational pace. Land mid-foot under your hips." },
-      { id: "e3", name: "Tempo Run",    sets: 1, reps: 25, restSeconds: 0, cue: "Comfortably hard pace — 7/10 effort. Hold steady." },
-      { id: "e4", name: "Cool Down Walk", sets: 1, reps: 5, restSeconds: 0, cue: "Slow walk to bring heart rate down. Stretch calves after." },
+      { id: "e1", name: "Warm-up Walk", sets: 1, reps: 5,  restSeconds: 0, cue: "Walk at a brisk but comfortable pace for 5 minutes. Swing your arms naturally. Take deep breaths in through your nose. Loosen up your hips and shoulders as you walk." },
+      { id: "e2", name: "Easy Jog",     sets: 1, reps: 10, restSeconds: 0, cue: "Transition into a conversational-pace jog. Land mid-foot under your hips, not out in front. Keep your shoulders relaxed and elbows at 90 degrees. Breathe in rhythm with your steps." },
+      { id: "e3", name: "Tempo Run",    sets: 1, reps: 25, restSeconds: 0, cue: "Pick up the pace to a 7/10 effort — comfortably hard. Maintain steady breathing and good posture. Focus on a smooth cadence around 170-180 steps per minute. Hold this pace for the full block." },
+      { id: "e4", name: "Cool Down Walk", sets: 1, reps: 5, restSeconds: 0, cue: "Slow to a steady walk for 5 minutes. Let your heart rate gradually drop. Take long, even breaths. Finish with a 2 minute standing stretch for calves and quads." },
     ],
   },
   {
@@ -80,10 +83,10 @@ export const SEED_WORKOUTS: Workout[] = [
     equipment: ["dumbbells", "barbell"],
     tags: ["strength", "muscle", "gym"],
     exercises: [
-      { id: "e1", name: "Squats",      sets: 4, reps: 10, restSeconds: 90, cue: "Chest up, knees out, sit between heels. Drive through mid-foot." },
-      { id: "e2", name: "Bench Press", sets: 4, reps: 8,  restSeconds: 90, cue: "Shoulder blades pinched. Bar to lower chest, press straight up." },
-      { id: "e3", name: "Deadlifts",   sets: 3, reps: 6,  restSeconds: 120, cue: "Neutral spine. Push the floor away. Hips and shoulders rise together." },
-      { id: "e4", name: "Pull-ups",    sets: 3, reps: 8,  restSeconds: 75, cue: "Chest to bar, control the descent. Use a band if needed." },
+      { id: "e1", name: "Squats",      sets: 4, reps: 10, restSeconds: 90,  cue: "Set the bar on your upper back and brace your core. Step back and stand with feet shoulder-width. Sit your hips back and down, chest up, knees tracking over your toes. Drive through mid-foot to stand tall." },
+      { id: "e2", name: "Bench Press", sets: 4, reps: 8,  restSeconds: 90,  cue: "Lie back with eyes under the bar. Pinch your shoulder blades together and plant your feet. Unrack and lower the bar with control to your lower chest. Press straight up until elbows lock out." },
+      { id: "e3", name: "Deadlifts",   sets: 3, reps: 6,  restSeconds: 120, cue: "Stand with feet hip-width and the bar over mid-foot. Hinge at the hips and grip the bar just outside your knees. Brace your core, keep your spine neutral, and push the floor away. Lower under control — don't bounce." },
+      { id: "e4", name: "Pull-ups",    sets: 3, reps: 8,  restSeconds: 75,  cue: "Hang from the bar with hands slightly wider than shoulders. Engage your lats and pull your elbows down. Bring your chest toward the bar. Lower with control to a full hang — use a band if needed." },
     ],
   },
   {
@@ -98,10 +101,10 @@ export const SEED_WORKOUTS: Workout[] = [
     equipment: ["yoga_mat", "bodyweight"],
     tags: ["core", "stability", "low-impact"],
     exercises: [
-      { id: "e1", name: "Hundred",            sets: 1, reps: 10, restSeconds: 20, cue: "Pump arms 5 in / 5 out for 10 sets. Low back stays imprinted." },
-      { id: "e2", name: "Roll Up",            sets: 2, reps: 8,  restSeconds: 30, cue: "Articulate the spine bone by bone. Control on the way down." },
-      { id: "e3", name: "Single Leg Stretch", sets: 2, reps: 12, restSeconds: 30, cue: "Switch legs in a smooth scissor. Shoulders off the mat." },
-      { id: "e4", name: "Teaser",             sets: 2, reps: 6,  restSeconds: 45, cue: "V-shape balance on tailbone. Reach long through fingers and toes." },
+      { id: "e1", name: "Hundred",            sets: 1, reps: 10, restSeconds: 20, cue: "Lie on your back with knees in table-top. Curl your head and shoulders off the mat. Extend your arms long by your sides and pump them small and fast. Inhale 5 pumps, exhale 5 pumps — that's one set of ten." },
+      { id: "e2", name: "Roll Up",            sets: 2, reps: 8,  restSeconds: 30, cue: "Lie flat with arms reaching overhead. Inhale to lift arms, then exhale and peel the spine off the mat one vertebra at a time. Reach long over your legs at the top. Lower back down with the same control." },
+      { id: "e3", name: "Single Leg Stretch", sets: 2, reps: 12, restSeconds: 30, cue: "Lie on your back and lift your head and shoulders. Hug your right knee in while your left leg extends straight at a 45° angle. Switch legs in a smooth scissor. Keep your low back pressed into the mat throughout." },
+      { id: "e4", name: "Teaser",             sets: 2, reps: 6,  restSeconds: 45, cue: "Lie back with legs extended at a 45° angle. Inhale and lift your torso to balance on your tailbone in a V-shape. Reach long through your fingertips toward your toes. Lower down slowly with control." },
     ],
   },
   {
@@ -116,10 +119,10 @@ export const SEED_WORKOUTS: Workout[] = [
     equipment: ["resistance_bands"],
     tags: ["mobility", "travel", "full-body"],
     exercises: [
-      { id: "e1", name: "Banded Squats",      sets: 3, reps: 15, restSeconds: 45, cue: "Band above knees. Push knees out as you stand." },
-      { id: "e2", name: "Banded Rows",        sets: 3, reps: 12, restSeconds: 45, cue: "Pull elbows back, squeeze shoulder blades together." },
-      { id: "e3", name: "Banded Glute Bridge", sets: 3, reps: 15, restSeconds: 45, cue: "Drive heels down, squeeze glutes at the top." },
-      { id: "e4", name: "Banded Press",       sets: 3, reps: 12, restSeconds: 45, cue: "Press band overhead, keep ribs tucked." },
+      { id: "e1", name: "Banded Squats",      sets: 3, reps: 15, restSeconds: 45, cue: "Loop the band just above your knees. Stand with feet shoulder-width. Sit your hips back into a squat, pushing your knees out against the band. Drive through your heels to stand tall." },
+      { id: "e2", name: "Banded Rows",        sets: 3, reps: 12, restSeconds: 45, cue: "Anchor the band at chest height or step on it with both feet. Hinge slightly forward with a flat back. Pull the band toward your ribs, drawing your elbows back. Squeeze your shoulder blades, then return with control." },
+      { id: "e3", name: "Banded Glute Bridge", sets: 3, reps: 15, restSeconds: 45, cue: "Lie on your back with the band above your knees and feet flat on the floor. Press your heels down and lift your hips. Squeeze your glutes hard at the top, knees pushing out into the band. Lower with control." },
+      { id: "e4", name: "Banded Press",       sets: 3, reps: 12, restSeconds: 45, cue: "Stand on the band with feet hip-width. Hold the ends at your shoulders. Press both hands straight up overhead, keeping your ribs tucked. Lower the hands back to your shoulders with control." },
     ],
   },
   {
@@ -134,10 +137,10 @@ export const SEED_WORKOUTS: Workout[] = [
     equipment: ["kettlebell"],
     tags: ["power", "conditioning", "full-body"],
     exercises: [
-      { id: "e1", name: "Kettlebell Swing",    sets: 5, reps: 15, restSeconds: 60, cue: "Hinge at the hips. Snap glutes — bell floats to chest height." },
-      { id: "e2", name: "Goblet Squat",        sets: 4, reps: 10, restSeconds: 60, cue: "Hold bell at chest. Squat between your elbows." },
-      { id: "e3", name: "Single-Arm Clean",    sets: 3, reps: 8,  restSeconds: 60, cue: "Pull tight, catch soft in rack. Tame the arc near your body." },
-      { id: "e4", name: "Turkish Get-up",      sets: 2, reps: 3,  restSeconds: 90, cue: "Slow, deliberate. Eyes on the bell through stand." },
+      { id: "e1", name: "Kettlebell Swing",    sets: 5, reps: 15, restSeconds: 60, cue: "Stand with feet shoulder-width, kettlebell on the floor in front. Hinge at the hips and grab the bell with both hands. Hike it back between your legs, then snap your hips forward. The bell floats to chest height — keep your arms relaxed." },
+      { id: "e2", name: "Goblet Squat",        sets: 4, reps: 10, restSeconds: 60, cue: "Hold the kettlebell vertically at your chest, elbows pointing down. Stand with feet shoulder-width. Squat down between your elbows, keeping your chest tall. Drive through mid-foot to stand." },
+      { id: "e3", name: "Single-Arm Clean",    sets: 3, reps: 8,  restSeconds: 60, cue: "Set the bell between your feet. Hinge at the hips and grip with one hand. Pull the bell tight to your body as you stand. Catch it softly in the rack position at your shoulder — no banging on the forearm." },
+      { id: "e4", name: "Turkish Get-up",      sets: 2, reps: 3,  restSeconds: 90, cue: "Lie on your back with the bell pressed straight up. Bend the same-side knee and roll up onto your opposite elbow, then hand. Sweep your back leg through to a lunge and stand tall. Reverse the entire sequence — slow and deliberate." },
     ],
   },
 ];
@@ -256,17 +259,21 @@ export function defaultSleep(date: string): Sleep {
   };
 }
 
-// Seed only if missing — idempotent.
+// Seed only if missing — idempotent. Re-seeds workouts when SEED_VERSION changes.
 export async function seedUserIfEmpty(uid: string) {
   try {
     const root = ref(db, `finnness/users/${uid}`);
     const snap = await get(root);
     const existing = snap.exists() ? snap.val() : {};
 
-    if (!existing.workouts) {
+    const currentVersion = existing?._meta?.workouts_version ?? 0;
+    const needsWorkoutSeed = !existing.workouts || currentVersion < SEED_VERSION;
+
+    if (needsWorkoutSeed) {
       const map: Record<string, Workout> = {};
       for (const w of SEED_WORKOUTS) map[w.id] = w;
       await set(ref(db, `finnness/users/${uid}/workouts`), map);
+      await set(ref(db, `finnness/users/${uid}/_meta/workouts_version`), SEED_VERSION);
     }
 
     const today = todayStr();

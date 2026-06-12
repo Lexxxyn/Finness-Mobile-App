@@ -282,8 +282,19 @@ export default function WorkoutPlay() {
         </View>
         {currentEx?.cue ? (
           <View style={styles.cueBox}>
-            <Text style={styles.cueTitle}>Form tip</Text>
-            <Text style={styles.cueText}>{currentEx.cue}</Text>
+            <Text style={styles.cueTitle}>Step-by-step</Text>
+            {currentEx.cue
+              .split(/(?<=[.!?])\s+/)
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+              .map((step, i) => (
+                <View key={i} style={styles.stepRow}>
+                  <View style={[styles.stepNum, { backgroundColor: w.color }]}>
+                    <Text style={styles.stepNumText}>{i + 1}</Text>
+                  </View>
+                  <Text style={styles.stepText}>{step}</Text>
+                </View>
+              ))}
           </View>
         ) : null}
       </View>
@@ -361,6 +372,14 @@ const styles = StyleSheet.create({
   },
   cueTitle: { color: COLORS.text.tertiary, fontSize: 11, fontWeight: "700", letterSpacing: 1.2, textTransform: "uppercase" },
   cueText: { color: COLORS.text.secondary, fontSize: 13, lineHeight: 19, marginTop: 4 },
+  stepRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, marginTop: 8 },
+  stepNum: {
+    width: 22, height: 22, borderRadius: 11,
+    alignItems: "center", justifyContent: "center",
+    marginTop: 1,
+  },
+  stepNumText: { color: "#FFFFFF", fontSize: 11, fontWeight: "800" },
+  stepText: { flex: 1, color: COLORS.text.secondary, fontSize: 13, lineHeight: 19 },
   bottom: { paddingHorizontal: 20, paddingBottom: 16, paddingTop: 12 },
   // Rest screen
   restWrap: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 24 },

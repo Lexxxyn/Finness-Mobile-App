@@ -28,6 +28,7 @@ import { Link, useRouter } from "expo-router";
 import { COLORS, SHADOW_CARD } from "@/src/constants/theme";
 import { PrimaryButton } from "@/src/components/PrimaryButton";
 import { InputField } from "@/src/components/InputField";
+import { DatePickerField } from "@/src/components/DatePickerField";
 import { useAuth } from "@/src/context/AuthContext";
 import {
   EQUIPMENT_OPTIONS,
@@ -251,12 +252,11 @@ export default function Register() {
                   ))}
                 </View>
 
-                <InputField
+                <DatePickerField
                   label="Date of Birth"
-                  icon={<Calendar color={COLORS.text.tertiary} size={18} />}
-                  placeholder="e.g. Jan 15, 1995"
                   value={dob}
-                  onChangeText={setDob}
+                  onChange={(v) => setDob(v)}
+                  placeholder="Tap to pick your birthday"
                   testID="register-dob-input"
                 />
                 <View style={{ flexDirection: "row", gap: 10 }}>

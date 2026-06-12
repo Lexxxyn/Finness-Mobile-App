@@ -17,6 +17,7 @@ import { ArrowLeft, Camera, Calendar, Ruler, Scale, Check } from "lucide-react-n
 
 import { COLORS, SHADOW_CARD } from "@/src/constants/theme";
 import { InputField } from "@/src/components/InputField";
+import { DatePickerField } from "@/src/components/DatePickerField";
 import { PrimaryButton } from "@/src/components/PrimaryButton";
 import { useAuth } from "@/src/context/AuthContext";
 import { saveProfile } from "@/src/services/db";
@@ -178,12 +179,11 @@ export default function EditProfile() {
                 </TouchableOpacity>
               ))}
             </View>
-            <InputField
+            <DatePickerField
               label="Date of Birth"
-              icon={<Calendar color={COLORS.text.tertiary} size={18} />}
-              placeholder="Jan 15, 1995"
               value={dob}
-              onChangeText={setDob}
+              onChange={(v) => setDob(v)}
+              placeholder="Tap to pick your birthday"
               testID="edit-profile-dob"
             />
             <View style={{ flexDirection: "row", gap: 10 }}>

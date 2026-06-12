@@ -95,7 +95,13 @@ export async function fetchProfile(uid: string): Promise<UserProfile | null> {
 }
 
 export async function saveProfile(uid: string, profile: Partial<UserProfile>) {
-  await writeNow({ path: `finnness/users/${uid}/profile`, value: profile, op: "update" });
+  // Strip undefined values — Firebase RTDB rejects undefined.
+  const cleaned: Record<string, any> = {};
+  for (const [k, v] of Object.entries(profile)) {
+    if (v !== undefined) cleaned[k] = v;
+  }
+  // Throw on failure so the UI can surface it.
+  await update(ref(db, `finnness/users/${uid}/profile`), cleaned);
 }
 
 // ===== Workouts =====
