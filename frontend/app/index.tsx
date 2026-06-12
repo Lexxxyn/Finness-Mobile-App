@@ -37,7 +37,7 @@ export default function Splash() {
           <ActivityIndicator color="#FFFFFF" style={{ marginTop: 24 }} />
         ) : null}
       </View>
-      <View style={styles.wave} pointerEvents="none">
+      <View style={styles.wave}>
         <WaveShape />
       </View>
     </LinearGradient>
@@ -77,5 +77,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 120,
+    pointerEvents: "none",
   },
 });

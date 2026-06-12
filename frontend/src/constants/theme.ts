@@ -44,19 +44,15 @@ export const COLORS = {
   border: "#E5E7EB",
 };
 
+// Cross-platform shadow via boxShadow (RN 0.76+). Replaces deprecated `shadow*` props.
+// `elevation` stays for older Android fallback.
 export const SHADOW_CARD = {
-  shadowColor: "#1F2937",
-  shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.06,
-  shadowRadius: 16,
+  boxShadow: "0px 8px 16px 0px rgba(31, 41, 55, 0.06)",
   elevation: 3,
 };
 
 export const SHADOW_BUTTON = {
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.1,
-  shadowRadius: 8,
+  boxShadow: "0px 4px 8px 0px rgba(0, 0, 0, 0.10)",
   elevation: 2,
 };
 
