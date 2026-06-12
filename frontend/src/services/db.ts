@@ -1,0 +1,176 @@
+import { ref, set, get, update, remove, child } from "firebase/database";
+import { db } from "@/src/lib/firebase";
+import { storage } from "@/src/utils/storage";
+import type { Workout, Meal, Sleep, UserProfile } from "@/src/types/models";
+
+// Local cache keys
+const cacheKey = (uid: string, kind: string) => `finnness:${uid}:${kind}`;
+
+async function cachedFetch<T>(uid: string, kind: string, fbPath: string): Promise<T | null> {
+  try {
+    const snap = await get(ref(db, fbPath));
+    const val = snap.exists() ? (snap.val() as T) : null;
+    await storage.setItem(cacheKey(uid, kind), JSON.stringify(val) as any);
+    return val;
+  } catch {
+    const raw = await storage.getItem<string>(cacheKey(uid, kind), "" as any);
+    if (typeof raw === "string" && raw.length > 0) {
+      try {
+        return JSON.parse(raw) as T;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+}
+
+// ===== Pending writes queue (offline sync) =====
+type PendingWrite = { path: string; value: any; op: "set" | "update" | "remove" };
+const PENDING_KEY = "finnness:pending_writes";
+
+async function loadPending(): Promise<PendingWrite[]> {
+  const raw = await storage.getItem<string>(PENDING_KEY, "" as any);
+  if (typeof raw === "string" && raw.length > 0) {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+async function savePending(list: PendingWrite[]) {
+  await storage.setItem(PENDING_KEY, JSON.stringify(list) as any);
+}
+
+async function queuePending(p: PendingWrite) {
+  const list = await loadPending();
+  list.push(p);
+  await savePending(list);
+}
+
+async function applyWrite(p: PendingWrite) {
+  if (p.op === "set") return set(ref(db, p.path), p.value);
+  if (p.op === "update") return update(ref(db, p.path), p.value);
+  if (p.op === "remove") return remove(ref(db, p.path));
+}
+
+async function writeNow(p: PendingWrite) {
+  try {
+    await applyWrite(p);
+  } catch {
+    await queuePending(p);
+  }
+}
+
+export async function flushPending(): Promise<number> {
+  const list = await loadPending();
+  if (list.length === 0) return 0;
+  const remaining: PendingWrite[] = [];
+  let success = 0;
+  for (const p of list) {
+    try {
+      await applyWrite(p);
+      success += 1;
+    } catch {
+      remaining.push(p);
+    }
+  }
+  await savePending(remaining);
+  return success;
+}
+
+// ===== Profile =====
+export async function fetchProfile(uid: string): Promise<UserProfile | null> {
+  return cachedFetch<UserProfile>(uid, "profile", `finnness/users/${uid}/profile`);
+}
+
+export async function saveProfile(uid: string, profile: Partial<UserProfile>) {
+  await writeNow({ path: `finnness/users/${uid}/profile`, value: profile, op: "update" });
+}
+
+// ===== Workouts =====
+export async function fetchWorkouts(uid: string): Promise<Workout[]> {
+  const data = await cachedFetch<Record<string, Workout>>(uid, "workouts", `finnness/users/${uid}/workouts`);
+  if (!data) return [];
+  return Object.values(data);
+}
+
+export async function fetchWorkout(uid: string, workoutId: string): Promise<Workout | null> {
+  const list = await fetchWorkouts(uid);
+  return list.find((w) => w.id === workoutId) ?? null;
+}
+
+export async function saveWorkout(uid: string, workout: Workout) {
+  await writeNow({
+    path: `finnness/users/${uid}/workouts/${workout.id}`,
+    value: workout,
+    op: "set",
+  });
+  // update cache
+  const list = await fetchWorkouts(uid);
+  const map: Record<string, Workout> = {};
+  let replaced = false;
+  for (const w of list) {
+    if (w.id === workout.id) {
+      map[w.id] = workout;
+      replaced = true;
+    } else {
+      map[w.id] = w;
+    }
+  }
+  if (!replaced) map[workout.id] = workout;
+  await storage.setItem(cacheKey(uid, "workouts"), JSON.stringify(map) as any);
+}
+
+// ===== Meals =====
+export async function fetchMealsForDate(uid: string, date: string): Promise<Meal[]> {
+  const data = await cachedFetch<Record<string, Meal>>(
+    uid,
+    `meals:${date}`,
+    `finnness/users/${uid}/meals/${date}`,
+  );
+  if (!data) return [];
+  return Object.values(data);
+}
+
+export async function saveMeal(uid: string, meal: Meal) {
+  await writeNow({
+    path: `finnness/users/${uid}/meals/${meal.date}/${meal.type}`,
+    value: meal,
+    op: "set",
+  });
+  // update cache for that date
+  const list = await fetchMealsForDate(uid, meal.date);
+  const map: Record<string, Meal> = {};
+  let replaced = false;
+  for (const m of list) {
+    if (m.type === meal.type) {
+      map[m.type] = meal;
+      replaced = true;
+    } else {
+      map[m.type] = m;
+    }
+  }
+  if (!replaced) map[meal.type] = meal;
+  await storage.setItem(cacheKey(uid, `meals:${meal.date}`), JSON.stringify(map) as any);
+}
+
+// ===== Sleep =====
+export async function fetchSleepForDate(uid: string, date: string): Promise<Sleep | null> {
+  return cachedFetch<Sleep>(uid, `sleep:${date}`, `finnness/users/${uid}/sleep/${date}`);
+}
+
+export async function fetchAllSleep(uid: string): Promise<Record<string, Sleep> | null> {
+  return cachedFetch<Record<string, Sleep>>(uid, "sleep_all", `finnness/users/${uid}/sleep`);
+}
+
+export async function saveSleep(uid: string, sleep: Sleep) {
+  await writeNow({
+    path: `finnness/users/${uid}/sleep/${sleep.date}`,
+    value: sleep,
+    op: "set",
+  });
+}
