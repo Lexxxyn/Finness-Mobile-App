@@ -65,6 +65,76 @@ class _SleepPageState extends State<SleepPage> {
     return total / _data.length;
   }
 
+  TimeOfDay? _parseTimeOfDay(String s) {
+    try {
+      final parts = s.trim().split(' ');
+      if (parts.isEmpty) return null;
+      final timePart = parts[0];
+      final ampm = parts.length > 1 ? parts[1].toUpperCase() : '';
+      final hm = timePart.split(':');
+      final h = int.parse(hm[0]);
+      final m = hm.length > 1 ? int.parse(hm[1]) : 0;
+      var hour = h % 12;
+      if (ampm == 'PM') hour += 12;
+      return TimeOfDay(hour: hour, minute: m);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _formatTimeOfDay(TimeOfDay t) {
+    return MaterialLocalizations.of(context).formatTimeOfDay(
+      t,
+      alwaysUse24HourFormat: false,
+    );
+  }
+
+  DateTime _toTodayDateTime(String timeStr) {
+    final tod = _parseTimeOfDay(timeStr) ?? const TimeOfDay(hour: 0, minute: 0);
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
+  }
+
+  Future<void> _pickTime({required bool isBedtime}) async {
+    final user = authService.currentUser;
+
+    final current = isBedtime ? _today.bedtime : _today.wakeup;
+    final initial = _parseTimeOfDay(current) ?? (isBedtime ? const TimeOfDay(hour: 22, minute: 30) : const TimeOfDay(hour: 6, minute: 0));
+    final picked = await showTimePicker(context: context, initialTime: initial);
+    if (picked == null) return;
+
+    final newBed = isBedtime ? _formatTimeOfDay(picked) : _today.bedtime;
+    final newWake = isBedtime ? _today.wakeup : _formatTimeOfDay(picked);
+
+    var bedDt = _toTodayDateTime(newBed);
+    var wakeDt = _toTodayDateTime(newWake);
+    if (!wakeDt.isAfter(bedDt)) wakeDt = wakeDt.add(const Duration(days: 1));
+    final diff = wakeDt.difference(bedDt);
+    final hours = diff.inMinutes / 60.0;
+
+    final newSleep = Sleep(
+      id: _today.id,
+      date: _today.date,
+      bedtime: newBed,
+      wakeup: newWake,
+      totalHours: hours,
+      deepSleep: _today.deepSleep,
+      lightSleep: _today.lightSleep,
+      remSleep: _today.remSleep,
+    );
+
+    // Update UI immediately so the user sees the changed times/total even when
+    // not authenticated or offline. Persist only if we have a user.
+    if (!mounted) return;
+    setState(() {
+      _data = {..._data, _today.date: newSleep};
+    });
+
+    if (user != null) {
+      await _service.saveSleep(user.uid, newSleep);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final today = _today;
@@ -94,18 +164,24 @@ class _SleepPageState extends State<SleepPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: _TimeCard(
-                          icon: Icons.wb_sunny_rounded,
-                          label: 'Bedtime',
-                          value: today.bedtime,
+                        child: InkWell(
+                          onTap: () => _pickTime(isBedtime: true),
+                          child: _TimeCard(
+                            icon: Icons.wb_sunny_rounded,
+                            label: 'Bedtime',
+                            value: today.bedtime,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: _TimeCard(
-                          icon: Icons.wb_twilight_rounded,
-                          label: 'Wake Up',
-                          value: today.wakeup,
+                        child: InkWell(
+                          onTap: () => _pickTime(isBedtime: false),
+                          child: _TimeCard(
+                            icon: Icons.wb_twilight_rounded,
+                            label: 'Wake Up',
+                            value: today.wakeup,
+                          ),
                         ),
                       ),
                     ],
